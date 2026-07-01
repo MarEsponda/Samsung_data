@@ -16,6 +16,7 @@ The data used in this project represents measurements collected from the acceler
 * `CodeBook.md`: A code book that describes the variables, the data, and any transformations or work performed to clean up the data.
 * `run_analysis.R`: The actual R script used to perform the 5 data cleaning steps required by the project.
 * `tidy_data_final.txt`: The final output data set containing the average of each variable for each activity and each subject.
+* `data_set.txt`: Merged data set (both test and trainig databases)
 
 ## Requirements and Prerequisites
 
