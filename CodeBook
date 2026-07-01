@@ -1,0 +1,100 @@
+# Code Book - Getting and Cleaning Data Course Project
+
+This code book describes the data, variables, and transformations performed to clean up the source data and create the final tidy dataset (`tidy_data_final.txt`).
+
+## Source Data Overview
+The original data comes from the **Human Activity Recognition Using Smartphones Dataset (Version 1.0)**. 
+The experiments involved 30 volunteers (aged 19–48 years). Each person performed six physical activities while wearing a Samsung Galaxy S II smartphone on their waist. Using the phone's embedded accelerometer and gyroscope, 3-axial linear acceleration and 3-axial angular velocity were captured at a constant rate of 50Hz.
+
+## Data Processing and Transformations
+The script `run_analysis.R` executes the following five operational steps to clean and reshape the data:
+
+1. **Merging the Datasets:**
+   * Training partitions (`subject_train.txt`, `X_train.txt`, `y_train.txt`) and testing partitions (`subject_test.txt`, `X_test.txt`, `y_test.txt`) were loaded into R.
+   * Internal columns for subjects, features, and activities were bound together using `cbind()`.
+   * Both datasets were merged vertically into a master data frame (`data_set`) using `rbind()`.
+   * Column headers were initially assigned using the labels provided in `features.txt`.
+
+2. **Extracting Measurements:**
+   * A subset of features was selected using `grep()` to extract only columns containing `"mean"`, `"std"`, or `"Mean"` in their names, while preserving the key experimental identifiers `subject` and `Activity`.
+
+3. **Descriptive Activity Names:**
+   * The numeric activity IDs (values 1 to 6) in the `Activity` column were transformed into an R `factor`.
+   * The IDs were mapped to human-readable text labels from `activity_labels.txt`:
+     * `1` -> `WALKING`
+     * `2` -> `WALKING_UPSTAIRS`
+     * `3` -> `WALKING_DOWNSTAIRS`
+     * `4` -> `SITTING`
+     * `5` -> `STANDING`
+     * `6` -> `LAYING`
+
+4. **Labeling the Dataset Variables:**
+   * Variables were appropriately renamed using `gsub()` expressions to ensure clarity and standard formatting. The following modifications were applied to the column names:
+     * Leading `t` replaced by `time` (Time domain signals)
+     * Leading `f` replaced by `frequency` (Frequency domain signals)
+     * `Acc` replaced by `Accelerometer`
+     * `Gyro` replaced by `Gyroscope`
+     * `Mag` replaced by `Magnitude`
+     * `BodyBody` replaced by `Body`
+     * `-mean()` replaced by `Mean`
+     * `-std()` replaced by `STD`
+
+5. **Creating the Tidy Summary Dataset:**
+   * The dataset was grouped by `Activity` and `subject`.
+   * The average (`mean`) was calculated for each numeric variable across all combinations of groups using `dplyr` functions (`group_by` and `summarise(across(...))`).
+   * The resulting independent tidy dataset consists of exactly **180 rows** (30 subjects × 6 activities) and was exported as `tidy_data_final.txt`.
+
+---
+
+## Variables in the Tidy Dataset
+
+### Identifier Variables
+* **`subject`**: The ID of the volunteer participant. Integer format ranging from `1` to `30`.
+* **`Activity`**: The specific physical task performed by the subject. Factor variable with 6 levels: `WALKING`, `WALKING_UPSTAIRS`, `WALKING_DOWNSTAIRS`, `SITTING`, `STANDING`, `LAYING`.
+
+### Signal Measurements (Numeric Features)
+All features listed below represent the **average values** calculated for each subject and activity. 
+* **Units:** All sensor signal features are normalized and bounded within `[-1, 1]` in the source data, meaning they are **dimensionless variables** (the original acceleration variables were in standard gravity units `g`, and angular velocity variables were in `radians/second`).
+
+The extracted numerical columns include:
+
+#### Time Domain Signals (Prefix: `time`)
+* `timeBodyAccelerometerMean-X` / `-Y` / `-Z`
+* `timeBodyAccelerometerSTD-X` / `-Y` / `-Z`
+* `timeGravityAccelerometerMean-X` / `-Y` / `-Z`
+* `timeGravityAccelerometerSTD-X` / `-Y` / `-Z`
+* `timeBodyAccelerometerJerkMean-X` / `-Y` / `-Z`
+* `timeBodyAccelerometerJerkSTD-X` / `-Y` / `-Z`
+* `timeBodyGyroscopeMean-X` / `-Y` / `-Z`
+* `timeBodyGyroscopeSTD-X` / `-Y` / `-Z`
+* `timeBodyGyroscopeJerkMean-X` / `-Y` / `-Z`
+* `timeBodyGyroscopeJerkSTD-X` / `-Y` / `-Z`
+* `timeBodyAccelerometerMagnitudeMean` / `STD`
+* `timeGravityAccelerometerMagnitudeMean` / `STD`
+* `timeBodyAccelerometerJerkMagnitudeMean` / `STD`
+* `timeBodyGyroscopeMagnitudeMean` / `STD`
+* `timeBodyGyroscopeJerkMagnitudeMean` / `STD`
+
+#### Frequency Domain Signals (Prefix: `frequency`)
+* `frequencyBodyAccelerometerMean-X` / `-Y` / `-Z`
+* `frequencyBodyAccelerometerSTD-X` / `-Y` / `-Z`
+* `frequencyBodyAccelerometerMeanFreq-X` / `-Y` / `-Z`
+* `frequencyBodyAccelerometerJerkMean-X` / `-Y` / `-Z`
+* `frequencyBodyAccelerometerJerkSTD-X` / `-Y` / `-Z`
+* `frequencyBodyAccelerometerJerkMeanFreq-X` / `-Y` / `-Z`
+* `frequencyBodyGyroscopeMean-X` / `-Y` / `-Z`
+* `frequencyBodyGyroscopeSTD-X` / `-Y` / `-Z`
+* `frequencyBodyGyroscopeMeanFreq-X` / `-Y` / `-Z`
+* `frequencyBodyAccelerometerMagnitudeMean` / `STD` / `MeanFreq`
+* `frequencyBodyAccelerometerJerkMagnitudeMean` / `STD` / `MeanFreq`
+* `frequencyBodyGyroscopeMagnitudeMean` / `STD` / `MeanFreq`
+* `frequencyBodyGyroscopeJerkMagnitudeMean` / `STD` / `MeanFreq`
+
+#### Angle Vectors (Averages applied to angular windows)
+* `angle(tBodyAccelerometerMean,gravity)`
+* `angle(tBodyAccelerometerJerkMean),gravityMean)`
+* `angle(tBodyGyroscopeMean,gravityMean)`
+* `angle(tBodyGyroscopeJerkMean,gravityMean)`
+* `angle(X,gravityMean)`
+* `angle(Y,gravityMean)`
+* `angle(Z,gravityMean)`
