@@ -1,5 +1,3 @@
-# Samsung_data
-
 # Project: Getting and Cleaning Data Course Project
 
 This repository contains the R code and documentation for the final project of the **Getting and Cleaning Data** course from Johns Hopkins University on Coursera.
