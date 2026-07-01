@@ -40,5 +40,8 @@ data_resumen <- filt_data_set %>%
         group_by(Activity, subject) %>%
         summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
+write.table(data_resumen, "tidy_data_final.txt", row.name=FALSE)
+write.table(filt_data_set, "data_set.txt", row.name=FALSE)
+
 #https://github.com/MarEsponda/Samsung_data
 
